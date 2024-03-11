@@ -11,17 +11,17 @@
                 
                 <div class="form-group mb-3">
                     <label for="{{ form.name.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Room Name:</label>
-                    <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" class="form-input px-4 py-2 w-full border rounded-md">
+                    <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" class="form-input px-4 py-2 w-full border rounded-md outline-none ring-1 ring-inset ring-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-400">
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="{{ form.slug.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Room Slug:</label>
-                    <input type="text" name="{{ form.slug.name }}" id="{{ form.slug.id_for_label }}" class="form-input px-4 py-2 w-full border rounded-md">
+                    <input type="text" name="{{ form.slug.name }}" id="{{ form.slug.id_for_label }}" class="form-input px-4 py-2 w-full border rounded-md outline-none ring-1 ring-inset ring-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-400">
                 </div>
 
                 <div class="form-group mb-3 flex">
                     <label for="{{ form.is_private.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Is Private:</label>
-                    <input type="checkbox" name="{{ form.is_private.name }}" id="{{ form.is_private.id_for_label }}" class="form-checkbox ml-4 h-[20px] w-[20px] accent-orange-400">
+                    <input type="checkbox" name="{{ form.is_private.name }}" id="{{ form.is_private.id_for_label }}" class="form-checkbox ml-4 h-[20px] w-[20px] accent-orange-400 cursor-pointer">
                 </div>
 
                 <button class="px-5 py-3 w-full rounded-xl text-white bg-orange-600 hover:bg-orange-700 font-semibold" type="submit">Create Room</button>

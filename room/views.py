@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic import ListView
 
 from .models import Room, Message
 from .forms import RoomForm
@@ -41,3 +42,13 @@ class CreateRoom(View):
             room.save()
             return redirect('rooms')
         return render(request, self.template_name, data)
+    
+
+@method_decorator(login_required, name='dispatch')
+class UserCreatedRoomsView(ListView):
+    model = Room
+    template_name = 'room/my_rooms.html'
+    context_object_name = 'created_rooms'
+
+    def get_queryset(self):
+        return Room.objects.filter(owner=self.request.user)
