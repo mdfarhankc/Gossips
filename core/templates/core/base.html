@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{% block title %}{% endblock %}Gossips</title>
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}" >
+    </head>
+
+    <body>
+        <header class="sticky top-0">
+            <nav class="flex items-center justify-between py-5 px-4 bg-orange-500">
+                <a href="/" class="text-xl text-white font-bold flex justify-between items-center drop-shadow-md hover:drop-shadow-lg">
+                    <img src="{% static 'images/favicon.png' %}" class="inline h-[40px] w-[40px]"/>
+                    <span class="">Gossips</span>
+                </a>
+
+                <div class="flex items-center space-x-4">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'rooms' %}" class="text-white font-semibold hover:text-gray-200">Rooms</a>
+                        <a href="{% url 'create_room' %}" class="text-white font-semibold hover:text-gray-200">Create Room</a>
+                        <a href="{% url 'logout' %}" class="text-white font-semibold hover:text-gray-200">Log out</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-white font-semibold hover:text-gray-200">Log in</a>
+                        <a href="{% url 'signup' %}" class="text-white font-semibold hover:text-gray-200">Sign up</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </header>
+
+        {% block content %}
+        {% endblock %}
+
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>

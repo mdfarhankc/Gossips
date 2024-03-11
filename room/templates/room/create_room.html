@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+
+{% block title %}CREATE ROOM | {% endblock %}
+
+{% block content %}
+    <section>
+        <div class="w-3/4 md:w-2/4 mx-4 mx-auto p-5 bg-white rounded-xl border border-orange-400 overflow-auto mt-10">
+            <h1 class="text-3xl md:text-5xl text-orange-400 font-semibold text-center my-3 font-sans">CREATE ROOM</h1>  
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Room Name:</label>
+                    <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" class="form-input px-4 py-2 w-full border rounded-md">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="{{ form.slug.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Room Slug:</label>
+                    <input type="text" name="{{ form.slug.name }}" id="{{ form.slug.id_for_label }}" class="form-input px-4 py-2 w-full border rounded-md">
+                </div>
+
+                <div class="form-group mb-3 flex">
+                    <label for="{{ form.is_private.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Is Private:</label>
+                    <input type="checkbox" name="{{ form.is_private.name }}" id="{{ form.is_private.id_for_label }}" class="form-checkbox ml-4 h-[20px] w-[20px] accent-orange-400">
+                </div>
+
+                <button class="px-5 py-3 w-full rounded-xl text-white bg-orange-600 hover:bg-orange-700 font-semibold" type="submit">Create Room</button>
+            </form>
+        </div>
+    </section>
+{% endblock %}

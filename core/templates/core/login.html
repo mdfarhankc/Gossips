@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+
+{% block title %}LOGIN | {% endblock %}
+
+{% block content %}
+    <section class="flex items-center justify-center">        
+        <form method="post" action="." class="md:w-[600px] w-[400px] p-5 mx-auto border border-orange-400 rounded-xl shadow-md mt-[100px]">
+            <h1 class="text-3xl lg:text-5xl text-orange-600 text-center font-bold">LOGIN</h1>
+            {% csrf_token %}
+        
+            <div class="mb-5">
+                <label class="text-black">Username</label>
+        
+                <input type="text" name="username" class="w-full bg-gray-200 mt-2 px-4 py-2 rounded-xl outline-none ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-orange-300">
+            </div>
+        
+            <div class="mb-5">
+                <label class="text-black">Password</label>
+        
+                <input type="password" name="password" class="w-full bg-gray-200 mt-2 px-4 py-2 rounded-xl outline-none ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-orange-300">
+            </div>
+        
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %} 
+                        <div class="mb-5 p-4 rounded-xl bg-red-300 text-white">
+                            <p>{{ error|escape }}</p>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        
+            <button class="bg-orange-500 hover:bg-orange-700 block rounded-xl text-white px-5 py-3 text-center w-full">LOGIN</button>
+        </form>
+    </section>
+{% endblock %}
