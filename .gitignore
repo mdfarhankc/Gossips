@@ -9,6 +9,9 @@ media
 # Backup files # 
 *.bak 
 
+# Ignore node files
+node_modules/
+
 # If you are using PyCharm # 
 # User-specific stuff
 .idea/**/workspace.xml

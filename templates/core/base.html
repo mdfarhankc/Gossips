@@ -1,3 +1,4 @@
+{% load compress %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -8,7 +9,11 @@
 
         <title>{% block title %}{% endblock %}Gossips</title>
 
-        <script src="https://cdn.tailwindcss.com"></script>
+        {% compress css %}
+            <link rel="stylesheet"
+                href="{% static 'src/output.css' %}">
+        {% endcompress %}
+        
         <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}" >
     </head>
 
