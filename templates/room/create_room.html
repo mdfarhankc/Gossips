@@ -3,9 +3,12 @@
 {% block title %}CREATE ROOM | {% endblock %}
 
 {% block content %}
-    <section>
-        <div class="w-3/4 md:w-2/4 mx-4 mx-auto p-5 bg-white rounded-xl border border-orange-400 overflow-auto mt-10">
+    <section class='max-h-screen'>
+        <div class="w-3/4 md:w-2/4 mx-auto p-5 bg-white rounded-xl border border-orange-400 overflow-auto mt-10">
             <h1 class="text-3xl md:text-5xl text-orange-400 font-semibold text-center my-3 font-sans">CREATE ROOM</h1>  
+            <div class="w-full flex my-3 md:mx-auto">
+                <a href="{% url 'my_rooms' %}" class="bg-orange-400 hover:bg-orange-600 text-white px-4 py-2 ml-auto mr-4 rounded-xl font-semibold">Go Back</a>
+            </div>
             <form method="post">
                 {% csrf_token %}
                 
@@ -22,6 +25,19 @@
                 <div class="form-group mb-3 flex">
                     <label for="{{ form.is_private.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Is Private:</label>
                     <input type="checkbox" name="{{ form.is_private.name }}" id="{{ form.is_private.id_for_label }}" class="form-checkbox ml-4 h-[20px] w-[20px] accent-orange-400 cursor-pointer">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="{{ form.invited_users.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">Invited Users:</label>
+                    <div class="max-h-[100px]">
+                        <select multiple id="{{ form.invited_users.id_for_label }}" name="{{ form.invited_users.name }}" class="form-input px-4 py-2 w-full border rounded-md outline-none ring-1 ring-inset ring-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-400">
+                            {% for user in form.invited_users.field.queryset %}
+                                {% if request.user.username != user.username %}       
+                                    <option value="{{ user.id }}">{{ user.username }}</option>
+                                {% endif %}        
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
 
                 <button class="px-5 py-3 w-full rounded-xl text-white bg-orange-600 hover:bg-orange-700 font-semibold" type="submit">Create Room</button>

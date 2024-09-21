@@ -3,7 +3,7 @@
 {% block title %}{{ room.name }} | {% endblock %}
 
 {% block content %}
-    <section>
+    <section class='max-h-screen'>
         <h1 class="text-3xl md:text-5xl text-orange-400 font-semibold text-center my-3 font-sans">ROOM - {{ room.name }}</h1>  
         <div class="w-full flex md:w-2/4 my-3 md:mx-auto">
             <a href="{% url 'rooms' %}" class="bg-orange-400 hover:bg-orange-600 text-white px-4 py-2 ml-auto mr-4 rounded-xl font-semibold">Go Back</a>
