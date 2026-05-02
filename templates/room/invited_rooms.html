@@ -16,25 +16,7 @@
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {% for room in invited_rooms %}
-                <a href="{% url 'room_detail' room.slug %}" class="group relative p-6 rounded-2xl bg-white ring-1 ring-orange-100 hover:ring-orange-300 hover:shadow-xl hover:shadow-orange-500/10 transition-all hover:-translate-y-1 flex flex-col">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="h-10 w-10 rounded-xl bg-linear-to-br from-rose-500 to-orange-500 text-white flex items-center justify-center font-black text-lg shadow-md shadow-rose-500/30">
-                            {{ room.name|slice:":1"|upper }}
-                        </div>
-                        <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                            Invited
-                        </span>
-                    </div>
-                    <h2 class="text-lg font-bold text-gray-900 group-hover:text-orange-600 transition">{{ room.name }}</h2>
-                    {% if room.description %}
-                        <p class="mt-1.5 text-sm text-gray-500 line-clamp-2">{{ room.description }}</p>
-                    {% endif %}
-                    <div class="mt-auto pt-4 flex items-center justify-between text-xs text-gray-400">
-                        <span>by {{ room.owner.username|default:"former member" }}</span>
-                        <span class="text-orange-500 font-semibold opacity-0 group-hover:opacity-100 transition">Enter &rarr;</span>
-                    </div>
-                </a>
+                {% include "_partials/room_card.html" with room=room variant='invited' %}
             {% empty %}
                 <div class="col-span-full rounded-2xl bg-white ring-1 ring-orange-100 p-12 text-center">
                     <div class="mx-auto h-14 w-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500">

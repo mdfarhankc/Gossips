@@ -1,46 +1,58 @@
 import json
 
-from django.contrib.auth import get_user_model
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from asgiref.sync import sync_to_async
+from django.db.models import Q
 
-from .models import Room, Message
-
-User = get_user_model()
+from .models import MAX_MESSAGE_LEN, Message, Room
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     # one instance per open WS; same-room consumers share a group.
 
     async def connect(self):
-        # join the room's group, then accept the handshake.
+        # identity & room derived from the trusted scope, never the client.
+        self.user = self.scope['user']
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f"chat_{self.room_name}"
 
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
+        if not self.user.is_authenticated:
+            await self.close(code=4401)
+            return
 
+        if not await self._can_access(self.room_name, self.user.id):
+            # don't leak whether the room exists or just refuses us — both → 4403.
+            await self.close(code=4403)
+            return
+
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, code):
-        # leave the group so dead sockets don't get broadcasts.
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        # safe even if connect() rejected — group_discard is a no-op for unjoined groups.
+        if hasattr(self, 'room_group_name'):
+            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     # entry point when the browser sends a frame to us.
     async def receive(self, text_data: str) -> None:
-        data = json.loads(text_data)
-        print(data)
-        message = data['message']
-        username = data['username']
-        room = data['room']
+        try:
+            data = json.loads(text_data)
+        except json.JSONDecodeError:
+            return
 
-        # persist, then fan out to everyone in the room.
-        await self.save_message(username, room, message)
+        message = (data.get('message') or '').strip()
+        if not message:
+            return
+        if len(message) > MAX_MESSAGE_LEN:
+            message = message[:MAX_MESSAGE_LEN]
+
+        # re-check on every send so revoked invitees can't keep posting.
+        if not await self._can_access(self.room_name, self.user.id):
+            await self.close(code=4403)
+            return
+
+        username = self.user.username
+        await self._save_message(self.user.id, self.room_name, message)
 
         # 'type' tells channels which method to call on each receiver.
         await self.channel_layer.group_send(
@@ -48,24 +60,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
-                'username': username
+                'username': username,
             }
         )
 
     # called on every consumer in the group, sender included.
     async def chat_message(self, event_data: dict[str, str]) -> None:
-        message = event_data['message']
-        username = event_data['username']
-
-        # ship the frame down this socket.
         await self.send(text_data=json.dumps({
-            'message': message,
-            'username': username
+            'message': event_data['message'],
+            'username': event_data['username'],
         }))
 
-    # sync_to_async because ORM is sync and we're in an async coroutine.
-    @sync_to_async
-    def save_message(self, username: str, room: str, message: str) -> None:
-        user = User.objects.get(username=username)
-        room = Room.objects.get(slug=room)
-        Message.objects.create(user=user, room=room, content=message)
+    @database_sync_to_async
+    def _can_access(self, slug: str, user_id: int) -> bool:
+        # one query: room must exist AND (be public OR user is owner OR user is invited).
+        return Room.objects.filter(slug=slug).filter(
+            Q(is_private=False) | Q(owner_id=user_id) | Q(invited_users__id=user_id)
+        ).exists()
+
+    @database_sync_to_async
+    def _save_message(self, user_id: int, room_slug: str, message: str) -> None:
+        Message.objects.create(
+            user_id=user_id,
+            room=Room.objects.get(slug=room_slug),
+            content=message,
+        )

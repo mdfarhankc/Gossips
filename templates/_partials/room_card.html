@@ -1,0 +1,44 @@
+{% comment %}
+Room card — used in rooms / my_rooms / invited_rooms.
+Params:
+  room    : Room instance
+  variant : 'public' | 'mine' | 'invited'  (default 'public')
+{% endcomment %}
+{% with variant=variant|default:'public' %}
+<a href="{% url 'room_detail' room.slug %}" class="group relative p-6 rounded-2xl bg-white ring-1 ring-orange-100 hover:ring-orange-300 hover:shadow-xl hover:shadow-orange-500/10 transition-all hover:-translate-y-1 flex flex-col">
+    <div class="flex items-center justify-between mb-4">
+        <div class="h-10 w-10 rounded-xl text-white flex items-center justify-center font-black text-lg shadow-md
+            {% if variant == 'invited' %}bg-linear-to-br from-rose-500 to-orange-500 shadow-rose-500/30
+            {% else %}bg-linear-to-br from-orange-500 to-amber-500 shadow-orange-500/30{% endif %}">
+            {{ room.name|slice:":1"|upper }}
+        </div>
+
+        {% if variant == 'invited' or variant == 'mine' and room.is_private %}
+            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
+                <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                {% if variant == 'invited' %}Invited{% else %}Private{% endif %}
+            </span>
+        {% else %}
+            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                {% if variant == 'mine' %}Public{% else %}Open{% endif %}
+            </span>
+        {% endif %}
+    </div>
+
+    <h2 class="text-lg font-bold text-gray-900 group-hover:text-orange-600 transition">{{ room.name }}</h2>
+    {% if room.description %}
+        <p class="mt-1.5 text-sm text-gray-500 line-clamp-2">{{ room.description }}</p>
+    {% endif %}
+
+    <div class="mt-auto pt-4 flex items-center justify-between text-xs text-gray-400">
+        <span>
+            {% if variant == 'mine' %}{{ room.created_at|date:"M j, Y" }}
+            {% else %}by {{ room.owner.username|default:"former member" }}{% endif %}
+        </span>
+        <span class="text-orange-500 font-semibold opacity-0 group-hover:opacity-100 transition">
+            {% if variant == 'invited' %}Enter{% elif variant == 'mine' %}Open{% else %}Join{% endif %} &rarr;
+        </span>
+    </div>
+</a>
+{% endwith %}

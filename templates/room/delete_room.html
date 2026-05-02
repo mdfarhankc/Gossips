@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete {{ room.name }} | {% endblock %}
+
+{% block content %}
+<section class="relative min-h-[calc(100vh-72px)] flex items-center justify-center overflow-hidden bg-linear-to-br from-orange-50 via-white to-rose-50 px-4 py-12">
+    <div class="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-rose-300/30 blur-3xl animate-pulse"></div>
+    <div class="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-orange-300/30 blur-3xl animate-pulse [animation-delay:1.5s]"></div>
+
+    <div class="relative w-full max-w-md">
+        <div class="absolute -inset-2 bg-linear-to-tr from-rose-400 via-orange-300 to-amber-400 rounded-3xl blur-2xl opacity-30"></div>
+
+        <div class="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-rose-500/10 ring-1 ring-rose-100 p-8 text-center">
+            <div class="mx-auto h-16 w-16 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mb-5">
+                <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/></svg>
+            </div>
+
+            <h1 class="text-2xl font-black tracking-tight text-gray-900">Delete this room?</h1>
+            <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+                <span class="font-semibold text-gray-700">{{ room.name }}</span> and all its messages will be permanently removed. This can't be undone.
+            </p>
+
+            <form method="post" class="mt-7 flex flex-col sm:flex-row gap-3">
+                {% csrf_token %}
+                <a href="{% url 'room_detail' room.slug %}"
+                   class="flex-1 inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold text-gray-700 bg-white ring-1 ring-gray-200 hover:bg-gray-50 transition order-2 sm:order-1">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-white font-semibold bg-linear-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 shadow-lg shadow-rose-500/30 transition-all hover:-translate-y-0.5 order-1 sm:order-2">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/></svg>
+                    Yes, delete it
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

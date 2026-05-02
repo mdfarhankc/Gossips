@@ -1,6 +1,9 @@
 from django.conf import settings
+from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.utils.text import slugify
+
+MAX_MESSAGE_LEN = 2000
 
 
 class Room(models.Model):
@@ -29,14 +32,18 @@ class Room(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(self.name)
-            slug = base
-            i = 2
-            while Room.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f"{base}-{i}"
-                i += 1
-            self.slug = slug
+            self.slug = self._generate_unique_slug()
         super().save(*args, **kwargs)
+
+    def _generate_unique_slug(self):
+        # collision-resilient. unique constraint at the DB level is the final guard.
+        base = slugify(self.name) or 'room'
+        slug = base
+        i = 2
+        while Room.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base}-{i}"
+            i += 1
+        return slug
 
 
 class Message(models.Model):
@@ -47,11 +54,15 @@ class Message(models.Model):
         null=True,
         related_name='messages',
     )
-    content = models.TextField()
+    content = models.TextField(validators=[MaxLengthValidator(MAX_MESSAGE_LEN)])
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['created_at']
+        indexes = [
+            # speeds up "load messages of room X in chronological order".
+            models.Index(fields=['room', 'created_at']),
+        ]
 
     def __str__(self):
         sender = self.user.username if self.user else '[deleted]'

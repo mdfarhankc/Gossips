@@ -1,0 +1,15 @@
+{% comment %}
+Privacy pill — used wherever a room is rendered with its public/private state.
+Param: room
+{% endcomment %}
+{% if room.is_private %}
+    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
+        <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Private
+    </span>
+{% else %}
+    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        Public
+    </span>
+{% endif %}

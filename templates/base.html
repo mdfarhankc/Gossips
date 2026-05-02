@@ -25,7 +25,12 @@
                         {% if request.user.is_authenticated %}
                             <a href="{% url 'rooms' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">Rooms</a>
                             <a href="{% url 'my_rooms' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">My Rooms</a>
-                            <a href="{% url 'invited_rooms' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">Invited</a>
+                            <a href="{% url 'invited_rooms' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition inline-flex items-center gap-1.5">
+                                Invited
+                                {% with invite_count=request.user.invited_rooms.count %}
+                                    {% if invite_count %}<span class="inline-flex items-center justify-center min-w-[18px] h-[18px] text-[10px] font-bold rounded-full bg-rose-100 text-rose-600 px-1.5">{{ invite_count }}</span>{% endif %}
+                                {% endwith %}
+                            </a>
                             <a href="{% url 'logout' %}" class="ml-2 px-4 py-2 rounded-lg text-white bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-sm transition">Log out</a>
                         {% else %}
                             <a href="{% url 'login' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">Log in</a>
@@ -45,7 +50,12 @@
                     {% if request.user.is_authenticated %}
                         <a href="{% url 'rooms' %}" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">Rooms</a>
                         <a href="{% url 'my_rooms' %}" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">My Rooms</a>
-                        <a href="{% url 'invited_rooms' %}" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">Invited</a>
+                        <a href="{% url 'invited_rooms' %}" class="px-3 py-2.5 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition flex items-center justify-between">
+                            <span>Invited</span>
+                            {% with invite_count=request.user.invited_rooms.count %}
+                                {% if invite_count %}<span class="inline-flex items-center justify-center min-w-[18px] h-[18px] text-[10px] font-bold rounded-full bg-rose-100 text-rose-600 px-1.5">{{ invite_count }}</span>{% endif %}
+                            {% endwith %}
+                        </a>
                         <a href="{% url 'logout' %}" class="block mt-1 px-4 py-2.5 rounded-lg text-white text-center bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-sm transition">Log out</a>
                     {% else %}
                         <a href="{% url 'login' %}" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition">Log in</a>

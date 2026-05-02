@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Invite to {{ room.name }} | {% endblock %}
+
+{% block content %}
+<section class="relative min-h-[calc(100vh-72px)] overflow-hidden bg-linear-to-br from-orange-50 via-white to-amber-50 px-4 py-12">
+    <div class="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-orange-300/30 blur-3xl animate-pulse"></div>
+    <div class="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-amber-300/30 blur-3xl animate-pulse [animation-delay:1.5s]"></div>
+
+    <div class="relative w-full max-w-2xl mx-auto">
+        <div class="absolute -inset-2 bg-linear-to-tr from-orange-400 via-amber-300 to-rose-400 rounded-3xl blur-2xl opacity-30"></div>
+
+        <div class="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl shadow-orange-500/10 ring-1 ring-orange-100 p-6 sm:p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <a href="{% url 'room_detail' room.slug %}" class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-orange-50 text-orange-600 hover:bg-orange-100 transition flex-shrink-0" aria-label="Back to room">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </a>
+                <div class="flex-1 min-w-0">
+                    <span class="text-xs font-bold uppercase tracking-widest text-orange-600">Invite people</span>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-gray-900 truncate">{{ room.name }}</h1>
+                </div>
+                <span id="selected-count" class="inline-flex items-center gap-1 text-xs font-bold text-orange-700 bg-orange-100 px-2.5 py-1 rounded-full">
+                    0 selected
+                </span>
+            </div>
+
+            <form method="post" id="invite-form">
+                {% csrf_token %}
+
+                <div class="relative mb-4">
+                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </span>
+                    <input type="text" id="invitee-search" autocomplete="off"
+                        class="w-full pl-10 pr-4 py-3 rounded-xl bg-orange-50/60 ring-1 ring-orange-100 outline-none transition focus:ring-2 focus:ring-orange-400 focus:bg-white placeholder:text-gray-400 text-sm"
+                        placeholder="Search by username…">
+                </div>
+
+                <div id="invitee-list" class="rounded-2xl ring-1 ring-orange-100 bg-white max-h-[50vh] overflow-y-auto divide-y divide-orange-50">
+                    {% for user in users %}
+                        <label data-username="{{ user.username|lower }}"
+                               class="invitee-row flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-orange-50/60 transition has-[:checked]:bg-orange-50">
+                            <input type="checkbox" name="invited_users" value="{{ user.id }}"
+                                {% if user.id in invited_ids %}checked{% endif %}
+                                class="peer sr-only">
+                            <div class="h-9 w-9 rounded-full bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-gray-900 truncate">{{ user.username }}</div>
+                                {% if user.email %}
+                                    <div class="text-xs text-gray-500 truncate">{{ user.email }}</div>
+                                {% endif %}
+                            </div>
+                            <span class="hidden peer-checked:inline-flex h-6 w-6 rounded-full bg-linear-to-br from-orange-500 to-amber-500 text-white items-center justify-center flex-shrink-0">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                            <span class="peer-checked:hidden h-6 w-6 rounded-full ring-1 ring-orange-200 flex-shrink-0"></span>
+                        </label>
+                    {% empty %}
+                        <div class="px-4 py-12 text-center">
+                            <p class="text-sm text-gray-500">No other users to invite yet.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="empty-search" class="hidden mt-4 text-center text-sm text-gray-500">
+                    No users match that search.
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <a href="{% url 'room_detail' room.slug %}"
+                       class="inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold text-gray-700 bg-white ring-1 ring-gray-200 hover:bg-gray-50 transition order-2 sm:order-1">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="group flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-white font-semibold bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all hover:-translate-y-0.5 order-1 sm:order-2">
+                        Save invitees
+                        <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        const searchEl = document.getElementById('invitee-search');
+        const listEl = document.getElementById('invitee-list');
+        const emptySearchEl = document.getElementById('empty-search');
+        const countEl = document.getElementById('selected-count');
+        if (!searchEl || !listEl) return;
+
+        const rows = Array.from(listEl.querySelectorAll('.invitee-row'));
+
+        function refreshCount() {
+            const n = rows.filter(r => r.querySelector('input').checked).length;
+            countEl.textContent = `${n} selected`;
+        }
+
+        function applyFilter() {
+            const q = searchEl.value.trim().toLowerCase();
+            let visible = 0;
+            rows.forEach(r => {
+                const match = !q || r.dataset.username.includes(q);
+                r.classList.toggle('hidden', !match);
+                if (match) visible++;
+            });
+            emptySearchEl.classList.toggle('hidden', visible !== 0 || rows.length === 0);
+        }
+
+        searchEl.addEventListener('input', applyFilter);
+        listEl.addEventListener('change', refreshCount);
+
+        refreshCount();
+    })();
+</script>
+{% endblock %}
