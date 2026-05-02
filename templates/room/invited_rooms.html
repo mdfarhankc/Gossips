@@ -3,18 +3,49 @@
 {% block title %}Invited Rooms | {% endblock %}
 
 {% block content %}
-    <section>
-        <h1 class="text-3xl lg:text-6xl text-orange-400 text-center font-bold my-3">Invited Rooms</h1>
-        <div class="w-full flex flex-wrap items-center">
-            {% for room in rooms %}
-                <div class=" w-full md:w-1/2 lg:w-1/4 px-3 py-3">
-                    <div class="p-5 bg-white shadow-md rounded-xl text-center border border-orange-400">
-                        <h2 class="mb-5 text-2xl font-semibold">{{ room.name }}</h2>
-        
-                        <a href="{% url 'room_detail' room.slug %}" class="px-5 py-3 block rounded-xl text-white bg-orange-600 hover:bg-orange-700 font-semibold">Join</a>
+<section class="relative overflow-hidden bg-linear-to-br from-orange-50 via-white to-amber-50 min-h-[calc(100vh-72px)]">
+    <div class="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-rose-200/30 blur-3xl animate-pulse"></div>
+    <div class="pointer-events-none absolute bottom-0 -left-32 h-96 w-96 rounded-full bg-orange-300/30 blur-3xl animate-pulse [animation-delay:1.5s]"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 py-12 lg:py-16">
+        <div class="mb-10">
+            <span class="text-sm font-bold uppercase tracking-widest text-orange-600">Invitations</span>
+            <h1 class="mt-2 text-4xl sm:text-5xl font-black tracking-tight text-gray-900">You're invited</h1>
+            <p class="mt-2 text-gray-500">Private rooms where someone added you to the guest list.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {% for room in invited_rooms %}
+                <a href="{% url 'room_detail' room.slug %}" class="group relative p-6 rounded-2xl bg-white ring-1 ring-orange-100 hover:ring-orange-300 hover:shadow-xl hover:shadow-orange-500/10 transition-all hover:-translate-y-1 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="h-10 w-10 rounded-xl bg-linear-to-br from-rose-500 to-orange-500 text-white flex items-center justify-center font-black text-lg shadow-md shadow-rose-500/30">
+                            {{ room.name|slice:":1"|upper }}
+                        </div>
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
+                            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            Invited
+                        </span>
                     </div>
+                    <h2 class="text-lg font-bold text-gray-900 group-hover:text-orange-600 transition">{{ room.name }}</h2>
+                    {% if room.description %}
+                        <p class="mt-1.5 text-sm text-gray-500 line-clamp-2">{{ room.description }}</p>
+                    {% endif %}
+                    <div class="mt-auto pt-4 flex items-center justify-between text-xs text-gray-400">
+                        <span>by {{ room.owner.username|default:"former member" }}</span>
+                        <span class="text-orange-500 font-semibold opacity-0 group-hover:opacity-100 transition">Enter &rarr;</span>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="col-span-full rounded-2xl bg-white ring-1 ring-orange-100 p-12 text-center">
+                    <div class="mx-auto h-14 w-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500">
+                        <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <h3 class="mt-4 text-lg font-bold text-gray-900">No invitations yet</h3>
+                    <p class="mt-1 text-sm text-gray-500">When someone invites you to a private room, it'll show up here.</p>
+                    <a href="{% url 'rooms' %}" class="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-gray-900 bg-white ring-1 ring-gray-200 hover:ring-orange-300 hover:bg-orange-50 transition">Browse public rooms</a>
                 </div>
             {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}

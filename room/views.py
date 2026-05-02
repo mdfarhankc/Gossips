@@ -8,33 +8,24 @@ from django.views.generic import ListView
 from .models import Room, Message
 from .forms import RoomForm
 
+
 @login_required
 def rooms(request):
-    rooms = Room.objects.filter(is_private=False)
-    data = {'rooms': rooms}
-    return render(request, 'room/rooms.html', data)
+    public_rooms = Room.objects.filter(is_private=False)
+    return render(request, 'room/rooms.html', {'rooms': public_rooms})
+
 
 @login_required
 def room_detail(request, slug):
     room = get_object_or_404(Room, slug=slug)
+
+    if room.is_private and request.user != room.owner and request.user not in room.invited_users.all():
+        return HttpResponseForbidden("You are not authorized to enter this room.")
+
     messages = Message.objects.filter(room=room)
     data = {'room': room, 'messages': messages, 'messagesLen': len(messages)}
     return render(request, 'room/room_detail.html', data)
 
-
-@login_required
-def private_room_detail(request, slug):
-    room = get_object_or_404(Room, slug=slug)
-
-    if room.is_private:
-        if request.user == room.owner or request.user in room.invited_users.all():
-            messages = Message.objects.filter(room=room)
-            data = {'room': room, 'messages': messages, 'messagesLen': len(messages)}
-            return render(request, 'room/room_detail.html', data)
-    else:
-        return HttpResponseForbidden("You are not authorized to enter this room.")
-    
-    
 
 @method_decorator(login_required, name='dispatch')
 class InvitedRoomsView(View):
@@ -42,30 +33,26 @@ class InvitedRoomsView(View):
 
     def get(self, request):
         invited_rooms = Room.objects.filter(invited_users=request.user)
-        data = {'invited_rooms': invited_rooms}
-        return render(request, self.template_name, data)
+        return render(request, self.template_name, {'invited_rooms': invited_rooms})
 
 
 @method_decorator(login_required, name='dispatch')
 class CreateRoom(View):
     template_name = 'room/create_room.html'
-    
+
     def get(self, request):
-        form = RoomForm()
-        data = {'form': form}
-        return render(request, 'room/create_room.html', data)
-    
+        return render(request, self.template_name, {'form': RoomForm()})
+
     def post(self, request):
         form = RoomForm(request.POST)
-        data = {'form': form}
         if form.is_valid():
             room = form.save(commit=False)
             room.owner = request.user
             room.save()
             form.save_m2m()
             return redirect('my_rooms')
-        return render(request, self.template_name, data)
-    
+        return render(request, self.template_name, {'form': form})
+
 
 @method_decorator(login_required, name='dispatch')
 class UserCreatedRoomsView(ListView):

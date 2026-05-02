@@ -1,31 +1,64 @@
 {% extends 'base.html' %}
 
-{% block title %}Rooms | {% endblock %}
+{% block title %}My Rooms | {% endblock %}
 
 {% block content %}
-    <section>
-        <h1 class="text-3xl lg:text-6xl text-orange-400 text-center font-bold my-3">My Rooms</h1>
-        <div class='flex items-center justify-center'>
-            <a href="{% url 'create_room' %}" class='px-4 py-2 bg-orange-400 rounded-xl text-white font-semibold hover:bg-orange-600'>
-                Create Room
+<section class="relative overflow-hidden bg-linear-to-br from-orange-50 via-white to-amber-50 min-h-[calc(100vh-72px)]">
+    <div class="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-amber-300/30 blur-3xl animate-pulse"></div>
+    <div class="pointer-events-none absolute bottom-0 -right-32 h-96 w-96 rounded-full bg-rose-200/30 blur-3xl animate-pulse [animation-delay:1.5s]"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 py-12 lg:py-16">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div>
+                <span class="text-sm font-bold uppercase tracking-widest text-orange-600">Your rooms</span>
+                <h1 class="mt-2 text-4xl sm:text-5xl font-black tracking-tight text-gray-900">Rooms you own</h1>
+                <p class="mt-2 text-gray-500">Spaces you started. Public ones surface in browse; private ones are invite-only.</p>
+            </div>
+            <a href="{% url 'create_room' %}" class="group inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white font-semibold bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/30 transition hover:-translate-y-0.5">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                New room
             </a>
         </div>
-        <div class="w-full flex flex-wrap items-center">
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {% for room in created_rooms %}
-                <div class=" w-full md:w-1/2 lg:w-1/4 px-3 py-3">
-                    <div class="p-5 bg-white shadow-md rounded-xl text-center border border-orange-400">
-                        <h2 class="mb-5 text-2xl font-semibold">{{ room.name }}</h2>
-                        <p class="text-sm my-2">
+                <a href="{% url 'room_detail' room.slug %}" class="group relative p-6 rounded-2xl bg-white ring-1 ring-orange-100 hover:ring-orange-300 hover:shadow-xl hover:shadow-orange-500/10 transition-all hover:-translate-y-1 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="h-10 w-10 rounded-xl bg-linear-to-br from-orange-500 to-amber-500 text-white flex items-center justify-center font-black text-lg shadow-md shadow-orange-500/30">
+                            {{ room.name|slice:":1"|upper }}
+                        </div>
                         {% if room.is_private %}
-                            <span class="text-red-500">Private</span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                Private
+                            </span>
                         {% else %}
-                            <span class="text-green-500">Public</span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                Public
+                            </span>
                         {% endif %}
-                            </p>
-                        <a href="{% url 'room_detail' room.slug %}" class="px-5 py-3 block rounded-xl text-white bg-orange-600 hover:bg-orange-700 font-semibold">Join</a>
                     </div>
+                    <h2 class="text-lg font-bold text-gray-900 group-hover:text-orange-600 transition">{{ room.name }}</h2>
+                    {% if room.description %}
+                        <p class="mt-1.5 text-sm text-gray-500 line-clamp-2">{{ room.description }}</p>
+                    {% endif %}
+                    <div class="mt-auto pt-4 flex items-center justify-between text-xs text-gray-400">
+                        <span>{{ room.created_at|date:"M j, Y" }}</span>
+                        <span class="text-orange-500 font-semibold opacity-0 group-hover:opacity-100 transition">Open &rarr;</span>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="col-span-full rounded-2xl bg-white ring-1 ring-orange-100 p-12 text-center">
+                    <div class="mx-auto h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500">
+                        <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    </div>
+                    <h3 class="mt-4 text-lg font-bold text-gray-900">You haven't created any rooms yet</h3>
+                    <p class="mt-1 text-sm text-gray-500">Spin up a public lounge or an invite-only room.</p>
+                    <a href="{% url 'create_room' %}" class="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-semibold bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-md transition">Create your first room</a>
                 </div>
             {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}
