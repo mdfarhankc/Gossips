@@ -9,13 +9,13 @@ from .models import Room, Message
 from .forms import RoomForm
 
 @login_required
-def Rooms(request):
-    rooms = Room.objects.filter(is_private=False).order_by('-date_added')
+def rooms(request):
+    rooms = Room.objects.filter(is_private=False)
     data = {'rooms': rooms}
     return render(request, 'room/rooms.html', data)
 
 @login_required
-def RoomDetail(request, slug):
+def room_detail(request, slug):
     room = get_object_or_404(Room, slug=slug)
     messages = Message.objects.filter(room=room)
     data = {'room': room, 'messages': messages, 'messagesLen': len(messages)}
@@ -23,7 +23,7 @@ def RoomDetail(request, slug):
 
 
 @login_required
-def PrivateRoomDetail(request, slug):
+def private_room_detail(request, slug):
     room = get_object_or_404(Room, slug=slug)
 
     if room.is_private:

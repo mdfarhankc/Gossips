@@ -1,14 +1,18 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from .models import Room
 
+
 class RoomForm(forms.ModelForm):
-    invited_users = forms.ModelMultipleChoiceField(queryset=User.objects.filter(is_superuser=False), required=False)
+    invited_users = forms.ModelMultipleChoiceField(
+        queryset=get_user_model().objects.filter(is_superuser=False),
+        required=False,
+    )
 
     class Meta:
         model = Room
-        fields = ['name', 'slug', 'is_private']
+        fields = ['name', 'slug', 'description', 'is_private']
 
     def clean(self):
         cleaned_data = super().clean()

@@ -20,22 +20,22 @@
    git clone https://github.com/mdfarhankc/Gossips.git
    ```
 
-2. Install dependencies:
+2. Install dependencies (using [uv](https://docs.astral.sh/uv/)):
 
    ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 
 3. Apply migrations:
 
    ```bash
-   python manage.py migrate
+   uv run python manage.py migrate
    ```
 
 4. Run the development server:
 
    ```bash
-   python manage.py runserver
+   uv run python manage.py runserver
    ```
 
    Access the application at [http://localhost:8000](http://localhost:8000).
